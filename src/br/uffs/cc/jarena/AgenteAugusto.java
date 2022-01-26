@@ -22,7 +22,13 @@ public class AgenteAugusto extends Agente
 	
 	public void pensa() {
 		//removida a estrategia de se mover aleatoriamente e startado a operacao de setar a movimentação
-		if (this.cont < 0.08) {
+		this.cont = Math.random(); // Contador aleatório de turnos, substitui o uso de static;
+
+        if (!(Math.abs(this.getX() - 450) > 20 && Math.abs(this.getY() - 350) > 20)) {
+            this.centro = true; // Agente está no centro do mapa;
+        }
+
+        if (this.cont < 0.08) {
 
             if(!this.centro) {
 
@@ -49,17 +55,22 @@ public class AgenteAugusto extends Agente
                 setDirecao(geraDirecaoAleatoria());
             }
         }
+		if(!podeMoverPara(getDirecao())) {
+            // Como não conseguimos nos mover, vamos escolher uma direção
+            // nova.
+           setDirecao(geraDirecaoAleatoria());
+        }
 
-
-		}
-		
-	//if(podeDividir() && getEnergia() >= 800) {
-	//	divide(); cancelamos a divisao por enquanto
-		}
-	}
-	
+		if(this.getEnergia() < 75){
+            this.para();
+        }
 	public void recebeuEnergia() {
 		
+		this.para();
+        String x = String.format("%d", this.getX());
+        String y = String.format("%d", this.getY());
+        enviaMensagem("energyReceived/"+x+"/"+y+"/"+this.getId());
+
 	}
 	
 	public void tomouDano(int energiaRestanteInimigo) {
