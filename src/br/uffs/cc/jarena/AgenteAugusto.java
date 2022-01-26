@@ -64,8 +64,9 @@ public class AgenteAugusto extends Agente
 		if(this.getEnergia() < 75){
             this.para();
         }
+	}
 	public void recebeuEnergia() {
-		
+
 		this.para();
         String x = String.format("%d", this.getX());
         String y = String.format("%d", this.getY());
@@ -74,23 +75,61 @@ public class AgenteAugusto extends Agente
 	}
 	
 	public void tomouDano(int energiaRestanteInimigo) {
-		// Invocado quando o agente está na mesma posição que um agente inimigo
-		// e eles estão batalhando (ambos tomam dano).
+		 if (this.getEnergia() > energiaRestanteInimigo) {
+            this.para();
+            String x = String.format("%d", this.getX());
+            String y = String.format("%d", this.getY());
+            enviaMensagem("help/"+x+"/"+y+"/"+this.getId());
+
+        }
+        else {
+            
+            if(!podeMoverPara(getDirecao())) {
+                setDirecao(geraDirecaoAleatoria());
+            // Corre pras colinas; Está perdendo o combate;
+            
+            }
+        }
 	}
 	
 	public void ganhouCombate() {
 		// Invocado se estamos batalhando e nosso inimigo morreu.
+		enviaMensagem("combateGanho/");
 	}
 	
-	public void recebeuMensagem(String msg) {
-		// Invocado sempre que um agente aliado próximo envia uma mensagem.
-	}
-	
-	public void para(){
-		
-	}
+	public void recebeuMensagem(String mensagem) {
+        
+        String[] msg = mensagem.split("/");
+        
+        if(msg[0].equals("help") || msg[0].equals("energyReceived")) {
+            
+            int X = Integer.parseInt(msg[1]);
+            int Y = Integer.parseInt(msg[2]);
+            int ID = Integer.parseInt(msg[3]);
+            if(this.getId() != ID){
+            vaiAtePonto(X, Y);
+            }
+        }
+        else if (msg[0].equals("combateGanho")) {
+            setDirecao(geraDirecaoAleatoria());  // pois não precisa mais de ajuda;
+        }
+    }
+          
+           
+	public void vaiAtePonto(int X,int Y) { // Vai até determinada coordenada;     
+        if (Math.abs(this.getX()-X)>5)  { 
+            if(this.getX()>X) { 
+                setDirecao(ESQUERDA);
+            } else setDirecao(DIREITA);
+        }else {
+            if(this.getY()>Y) {
+                setDirecao(CIMA);
+            } else setDirecao(BAIXO);
+        }
+    }
+
 	public String getEquipe() {
 		// Definimos que o nome da equipe do agente é "Augusto".
-		return "Augusto";
+		return "AgenteAugusto";
 	}
 }
